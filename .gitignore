@@ -2,18 +2,20 @@
 ## Eclipse
 #################
 
+*.dex
+*.apk
+*.ap_
+*.class
 *.pydevproject
-.project
 .metadata
 bin/
+gen/
 tmp/
 *.tmp
 *.bak
 *.swp
 *~.nib
 local.properties
-.classpath
-.settings/
 .loadpath
 
 # External tool builders

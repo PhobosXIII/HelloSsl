@@ -16,6 +16,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -30,9 +31,9 @@ public class MyIntentService extends IntentService {
 	public static final String ACTION="mycustomactionstring";
 	private static final String CONSUMER_KEY = "sweettea";
 	private static final String CONSUMER_SECRET = "topsecretsweettea248";
-	private static final String REQUEST_TOKEN_ENDPOINT_URL = "https://api.v7taxi.ru/oauth/request_token/";
-	private static final String ACCESS_TOKEN_ENDPOINT_URL = "https://api.v7taxi.ru/oauth/access_token/?username=God&password=holly";
-	private static final String AUTHORIZE_WEBSITE_URL = "https://api.v7taxi.ru/oauth/authorize/";
+	private static final String REQUEST_TOKEN_ENDPOINT_URL = "http://172.31.0.120:8000/oauth/request_token/";
+	private static final String ACCESS_TOKEN_ENDPOINT_URL = "http://172.31.0.120:8000/oauth/access_token/?username=God&password=holly";
+	private static final String AUTHORIZE_WEBSITE_URL = "http://172.31.0.120:8000/oauth/authorize/";
 	private static final String TAG = "myLog";
 	
 	CommonsHttpOAuthConsumer consumer = null;
@@ -51,7 +52,7 @@ public class MyIntentService extends IntentService {
         String authToken = prefs.getString(OAuth.OAUTH_TOKEN, "");
         String authTokenSecret = prefs.getString(OAuth.OAUTH_TOKEN_SECRET, "");
     	
-    	HttpClient client = HttpUtils.getNewHttpClient();
+    	HttpClient client = new DefaultHttpClient();
         
         consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
         
@@ -93,7 +94,7 @@ public class MyIntentService extends IntentService {
 
         try {
         	HttpResponse response = client.execute(request);
-        	message = String.valueOf(response.getStatusLine().getStatusCode() + " " + convertStreamToString(response.getEntity().getContent()));   
+        	message = String.valueOf(convertStreamToString(response.getEntity().getContent()));   
 		} catch (ClientProtocolException e) {
 			message = "Что-то не так";
 		} catch (IOException e) {
