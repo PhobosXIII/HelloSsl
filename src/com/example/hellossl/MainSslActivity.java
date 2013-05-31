@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,16 +26,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.commonsware.cwac.endless.EndlessAdapter;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 public class MainSslActivity extends Activity {
 
 	LinkedList<String> places, tempList;
-	PullToRefreshListView pullToRefreshView;
 	DemoAdapter adapter;
 	ListView actualListView;
 	Intent intent;
@@ -51,30 +44,11 @@ public class MainSslActivity extends Activity {
         
         intent = new Intent(this, MyIntentService.class);
         tempList = new LinkedList<String>();
-        
-        pullToRefreshView = (PullToRefreshListView) findViewById(R.id.pull_to_refresh_listview);
-        pullToRefreshView.setOnRefreshListener(new OnRefreshListener<ListView>() {
-            @Override
-            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-            	pullToRefreshView.setLastUpdatedLabel(DateUtils.formatDateTime(getApplicationContext(),
-						System.currentTimeMillis(), DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE
-								| DateUtils.FORMAT_ABBREV_ALL));
-                startService(intent.putExtra("url", "http://172.31.0.120:8000/v2/places.json"));
-            }
-        });
-        pullToRefreshView.setMode(Mode.PULL_DOWN_TO_REFRESH);
-        pullToRefreshView.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
-            @Override
-            public void onLastItemVisible() {
-
-            }
-        });
-
-		actualListView = pullToRefreshView.getRefreshableView();
+        actualListView = (ListView) findViewById(R.id.listView1);
         adapter = (DemoAdapter) actualListView.getAdapter();
         if (adapter == null) { 
         	places = new LinkedList<String>();
-        	startService(intent.putExtra("url", "http://172.31.0.120:8000/v2/places.json?limit=" + String.valueOf(BATCH_SIZE) + "&offset=" + String.valueOf(getLastOffset())));
+        	startService(intent.putExtra("url", "http://api.ktovputi.ru/v2/routes.json"));
         	adapter = new DemoAdapter(this, places);
         }
         else {
@@ -117,17 +91,19 @@ public class MainSslActivity extends Activity {
             Log.d("example","onReceive called");
             tempList.clear();
             String message = intent.getStringExtra("message");
+            String encode = intent.getStringExtra("encode");
+            Log.d("ENCODED", encode);
             try {
 	            JSONArray jPlaces = new JSONArray(message);
 	            if (jPlaces.length() != 0) {
 	            	mEndList = false;
 		            for (int i = 0; i < jPlaces.length(); i++) {
 		                JSONObject jPlace = jPlaces.getJSONObject(i);
-		                if (!places.contains(jPlace.getString("name"))) {
-		                	places.add(jPlace.getString("name"));
-		                	tempList.add(jPlace.getString("name"));
+		                if (!places.contains(jPlace.getString("id"))) {
+		                	places.add(jPlace.getString("id"));
+		                	tempList.add(jPlace.getString("id"));
 		                }
-		                Log.d("example", jPlace.getString("name"));
+		                Log.d("example", jPlace.getString("id"));
 		            }
 	            }
 	            else {
@@ -135,7 +111,6 @@ public class MainSslActivity extends Activity {
 	            }
             } catch (JSONException e) {}
             adapter.notifyDataSetChanged();
-			pullToRefreshView.onRefreshComplete();
 			setLastOffset(getLastOffset() + BATCH_SIZE);
 			Log.d("example", String.valueOf(mEndList));
 			Log.d("example", String.valueOf(getLastOffset()));

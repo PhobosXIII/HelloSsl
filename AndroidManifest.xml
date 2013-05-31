@@ -5,7 +5,7 @@
 
     <uses-sdk
         android:minSdkVersion="9"
-        android:targetSdkVersion="15" />
+        android:targetSdkVersion="17" />
     
      <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -13,14 +13,23 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <activity android:name=".AuthActivity"
+    		android:configChanges="orientation"
+        	android:label="Connect SNS" android:launchMode="singleTask">
+        	<intent-filter>
+            	<action android:name="android.intent.action.MAIN" />
+            	<category android:name="android.intent.category.LAUNCHER" />
+        	</intent-filter>
+        	<intent-filter>
+	            <action android:name="android.intent.action.VIEW" />
+	            <category android:name="android.intent.category.DEFAULT" />
+	            <category android:name="android.intent.category.BROWSABLE" />
+	            <data android:scheme="vputiapp" android:host="connect" />
+        	</intent-filter>
+    	</activity>
         <activity
             android:name=".MainSslActivity"
             android:label="@string/title_activity_main_ssl" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".EndlessAdapterDemo"
